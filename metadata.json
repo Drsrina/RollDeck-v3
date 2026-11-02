@@ -1,0 +1,8 @@
+{
+  "name": "RollDeck V3",
+  "description": "Rolador de dados de TTRPG mobile-first, rápido e offline com suporte a pacotes e dados customizados.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

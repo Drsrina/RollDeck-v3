@@ -1,0 +1,21 @@
+services:
+  rolldeck:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rolldeck-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      # Opcional: Chave de API para geração de loot com IA Gemini.
+      # Se não fornecida, o RollDeck utiliza automaticamente o motor procedural 100% offline.
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

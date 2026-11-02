@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+:root {
+  --bg-dark: #07060d;
+  --bg-dark-secondary: #0d0b1a;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-hover: rgba(255, 255, 255, 0.08);
+  --glass-bg-active: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-hover: rgba(255, 255, 255, 0.22);
+  
+  --neon-cyan: #22d3ee;
+  --neon-cyan-glow: rgba(34, 211, 238, 0.4);
+  --neon-magenta: #e879f9;
+  --neon-magenta-glow: rgba(232, 121, 249, 0.4);
+  --neon-violet: #8b5cf6;
+  --neon-violet-glow: rgba(139, 92, 246, 0.4);
+  --neon-lime: #a3e635;
+  --neon-lime-glow: rgba(163, 230, 53, 0.4);
+  --neon-amber: #f59e0b;
+  --neon-red: #f43f5e;
+  --neon-red-glow: rgba(244, 63, 94, 0.45);
+
+  --theme-primary: #22d3ee;
+  --theme-primary-glow: rgba(34, 211, 238, 0.45);
+  --theme-secondary: #e879f9;
+  --theme-secondary-glow: rgba(232, 121, 249, 0.45);
+  --theme-accent: #8b5cf6;
+  --theme-accent-glow: rgba(139, 92, 246, 0.45);
+
+  --ambient-orb-1: rgba(34, 211, 238, 0.16);
+  --ambient-orb-2: rgba(232, 121, 249, 0.13);
+  --ambient-orb-3: rgba(139, 92, 246, 0.13);
+
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: #f1f5f9;
+  transition: background-color 0.4s ease;
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-panel {
+    background-color: #121024 !important;
+  }
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-panel-elevated {
+  background: rgba(22, 19, 44, 0.75);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 15px -2px var(--neon-cyan-glow), inset 0 0 10px -2px var(--neon-cyan-glow);
+}
+
+.glow-magenta {
+  box-shadow: 0 0 15px -2px var(--neon-magenta-glow), inset 0 0 10px -2px var(--neon-magenta-glow);
+}
+
+.glow-violet {
+  box-shadow: 0 0 15px -2px var(--neon-violet-glow), inset 0 0 10px -2px var(--neon-violet-glow);
+}
+
+.glow-lime {
+  box-shadow: 0 0 18px 0px var(--neon-lime-glow), inset 0 0 12px 0px var(--neon-lime-glow);
+}
+
+.glow-red {
+  box-shadow: 0 0 18px 0px var(--neon-red-glow), inset 0 0 12px 0px var(--neon-red-glow);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px rgba(34, 211, 238, 0.6);
+}
+
+.text-glow-lime {
+  text-shadow: 0 0 10px var(--neon-lime), 0 0 20px rgba(163, 230, 53, 0.6);
+}
+
+.text-glow-red {
+  text-shadow: 0 0 10px var(--neon-red), 0 0 20px rgba(244, 63, 94, 0.6);
+}
+
+.text-glow-magenta {
+  text-shadow: 0 0 10px var(--neon-magenta), 0 0 20px rgba(232, 121, 249, 0.6);
+}
+
+/* Touch targets and tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input, textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* 3D perspective for dice rolling */
+.dice-container-3d {
+  perspective: 900px;
+  transform-style: preserve-3d;
+}
+
+@keyframes dice-roll-spin {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.85);
+  }
+  30% {
+    transform: rotateX(360deg) rotateY(180deg) rotateZ(120deg) scale(1.15);
+  }
+  70% {
+    transform: rotateX(720deg) rotateY(540deg) rotateZ(280deg) scale(1.05);
+  }
+  100% {
+    transform: rotateX(1080deg) rotateY(720deg) rotateZ(360deg) scale(1);
+  }
+}
+
+.animate-dice-spin {
+  animation: dice-roll-spin 0.75s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+  will-change: transform;
+}
+
+/* Tabular numbers for alignment */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
