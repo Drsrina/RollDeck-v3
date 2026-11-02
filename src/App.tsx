@@ -40,9 +40,12 @@ export default function App() {
     settings,
   } = useAppStore();
 
+    const { checkSession } = useAuthStore();
+
   useEffect(() => {
     refreshFromDB();
-  }, [refreshFromDB]);
+    checkSession();
+  }, [refreshFromDB, checkSession]);
 
   // Global desktop keyboard shortcuts
   useEffect(() => {

@@ -1,175 +1,121 @@
 # 🎲 RollDeck V3 — TTRPG Master & Player Deck
-
-> Rolador de dados profissional de RPG de mesa, rápido, responsivo, mobile-first e **100% offline**, com simulação de física de dados 3D na tela, mapa de notas relacional com grafo wiki, gerador de loot com motor duplo (Procedural e IA) e sistema de autenticação local.
+> **Plataforma Profissional para Mestres e Jogadores de RPG de Mesa**  
+> Rolador de dados com física 3D, mapa mental tático relacional (wiki bidirecional estilo Obsidian), gerador de loot duplo (Procedural Offline + IA Gemini), banco relacional PostgreSQL, controle de acesso granular (RBAC), suporte a equipes e **Gateway REST para Agentes Autônomos de IA**.
 
 ---
 
 ## 🔐 Acesso e Credenciais
 
-Ao iniciar o aplicativo, a tela de login principal valida a entrada:
+Ao iniciar pela primeira vez via Docker ou localmente, o banco inicializa com o usuário Administrador seguro:
 
-| Usuário | Senha | Nível de Permissão |
-| :--- | :--- | :--- |
-| **`admin`** | **`admin`** | Acesso Completo de Mestre / Administrador |
+| Usuário | Senha Padrão | Nível | Painel Disponível |
+| :--- | :--- | :--- | :--- |
+| **`admin`** | **`admin123`** *(configurável no `.env`)* | **Administrador Global** | Governança RBAC, Gestão de Usuários, Equipes e Chaves de Agentes IA |
 
-- **Manter Conectado**: Salva a sessão no armazenamento local para conveniência.
-- **Botão Preencher**: Atalho de 1 clique para auto-completar as credenciais na tela de login.
-- **Logout Seguro**: Disponível a qualquer momento na Barra Lateral Esquerda, no Topo Mobile e na aba de Configurações.
+- **Sessão Segura**: Armazenamento criptográfico seguro via cookie `HttpOnly` com token JWT assinado.
+- **Proteção Anti-Brute-Force**: Limite de tentativas de login por IP gerenciado via middleware Express.
+- **Painel Administrativo**: Acessível na aba **Ajustes & Dados** para controle de privilégios de cada jogador.
 
 ---
 
 ## ✨ Principais Funcionalidades
 
-### 1. 🎲 Mesa de Rolagem & Dados 3D na Tela
-- Dados padrão TTRPG (`d4`, `d6`, `d8`, `d10`, `d12`, `d20`, `d100`).
-- Dados customizados com lados personalizados e símbolos (ex: Moeda, Fate/Fudge, dados numéricos e textuais).
-- **Dados 3D Animados**: Simulação física de dados caindo, quicando e girando em 3 dimensões diretamente na tela ao rolar (ativável/desativável nas Configurações).
-- Modificadores globais, vantagens, desvantagens e histórico persistido no IndexedDB.
+### 1. 🎲 Mesa de Rolagem & Simulação 3D na Tela
+- Dados padrão TTRPG (`d4`, `d6`, `d8`, `d10`, `d12`, `d20`, `d100`) e dados customizados ilimitados (Fate/Fudge, Moedas, textos personalizados).
+- **Sem Viés Estatístico**: Números gerados via Web Crypto API com técnica de amostragem por rejeição (*rejection sampling*).
+- **Física de Dados 3D**: Renderização e colisões de dados saltando na tela (ativável/desativável nas preferências).
+- Modificadores globais, vantagens/desvantagens e histórico persistido no PostgreSQL e cache local.
 
 ### 2. ⚡ Gerador de Loot com Motor Duplo
-- **Motor Procedural (Sem IA)**: 100% offline, determinístico e instantâneo. Utiliza taxonomias ricas de fantasia medieval, cyberpunk, sci-fi espacial, terror gótico e pós-apocalíptico.
-- **Motor com IA (Google Gemini)**: Gera narrativas poéticas e descrições profundas conectadas ao lore do cenário.
-- Suporte a colunas dinâmicas: fórmulas de dados (`1d8`, `2d6+2`), moedas com taxas de câmbio, min/max numéricos, tags, raridades ponderadas e regras sem repetição.
+- **Motor Procedural (100% Offline)**: Instantâneo e determinístico. Gera nomes evocativos, materiais, raridades balanceadas e descrições para 8 gêneros (*Fantasia Medieval, Cyberpunk Noir, Sci-Fi, Faroeste Sobrenatural, Pós-Apocalipse, Terror Gótico, Steampunk e Mitologia*).
+- **Motor com IA (Google Gemini)**: Gera crônicas poéticas e itens lendários com descrições ricas e detalhadas. Possui fallback automático entre modelos em caso de sobrecarga.
+- **Colunas Dinâmicas**: Suporta fórmulas de dados integradas (`1d8`, `2d6+2`), moedas com taxas de câmbio automáticas, peso cumulativo e tags de propriedades.
 
 ### 3. 🗺️ Mapa Tático de Notas & Grafo Wiki
-- Tela infinita de nós com suporte a pan, zoom e minimapa tático.
-- Conexões relacionais automáticas estilo Obsidian via links bidirecionais `[[Nome da Nota]]`.
-- Exportação de notas para Markdown (.zip) e tabelas interativas no canvas.
+- Tela infinita para planejamento de campanhas, mapas mentais e sessões com suporte a pan, zoom e minimapa tático.
+- **Conexões Bidirecionais Obsidian**: Reconhecimento automático de links relacionais no formato `[[Nome da Nota]]`.
+- Exportação de notas para Markdown (.zip), JSON e sincronização com banco relacional.
 
-### 4. 🎨 8 Temas Neon Imersivos com Propagação Total
-- Cyberpunk Neon, Neon Roxo & Rosa, Fantasia Dourada, Druida Esmeralda, Vampírico Carmesim, Sci-Fi Oceânico, Minimalista Escuro e Chamas do Dragão.
-- As paletas de cores atingem toda a interface, incluindo a **Barra Lateral Esquerda Desktop**, a TopBar e a BottomNav.
+### 4. 👥 Equipes, Mesas de Jogo & RBAC Granular
+- Criação de **Múltiplas Equipes/Mesas**: Cada campanha possui seu próprio banco de notas isolado ou compartilhado.
+- **Controle de Acesso por Módulo**: O administrador define por usuário quem pode:
+  - Rolar dados
+  - Usar o gerador de loot
+  - Consumir créditos da IA Gemini
+  - Criar e gerenciar notas
+  - Modificar pacotes de dados
 
-### 5. 📱 PWA 100% Offline-First
-- Funciona sem internet através de Service Workers e banco de dados local IndexedDB.
-- Instalável no celular (iOS / Android) e Desktop como aplicativo nativo.
+### 5. 🤖 Gateway de API para Agentes de IA Externos
+Permita que agentes autônomos (Claude, ChatGPT, LangChain, n8n, CrewAI, AutoGen ou scripts locais) interajam diretamente com a campanha:
+- **Chaves de API com Escopos**: Geração de chaves `rdk_live_...` vinculadas a uma mesa específica com escopos granulares (`notes:read`, `notes:write`).
+- **Endpoints REST Dedicados**:
+  - `GET /api/v1/agent/notes` — Consulta e busca por texto/tags em todas as notas da equipe.
+  - `GET /api/v1/agent/notes/:id` — Retorna conteúdo e detalhes de uma nota.
+  - `POST /api/v1/agent/notes` — Agente cria notas (resumos de sessão gerados por IA, fichas de NPCs, pistas encontradas).
+  - `PUT /api/v1/agent/notes/:id` — Agente atualiza informações de notas existentes.
 
 ---
 
-## 🐳 Executando com Docker & Docker Compose (Recomendado)
+## 🐳 Executando com Docker Compose (Recomendado para Produção / VPS)
 
-O projeto possui configuração pronta para containerização rápida com Docker multi-stage build.
+O projeto está pronto para deploy em qualquer VPS Linux (Ubuntu, Debian, etc.) ou ambiente local com Docker:
 
-### Pré-requisitos
-- [Docker](https://docs.docker.com/get-docker/) e [Docker Compose](https://docs.docker.com/compose/install/) instalados.
-
-### 1. Iniciar com Docker Compose (Comando Único)
+### 1. Iniciar a Stack Completa (App + PostgreSQL)
 ```bash
+# Copie o template de ambiente
+cp .env.example .env
+
+# Construa e suba os contêineres em segundo plano
 docker compose up --build -d
 ```
-Acesse o aplicativo em seu navegador em: **`http://localhost:3000`**
+Acesse a aplicação em seu navegador em: **`http://localhost:3000`**
 
-### 2. Parar a aplicação
+### 2. Verificar o Status dos Serviços
+```bash
+docker compose ps
+```
+Você verá ambos os contêineres saudáveis:
+- `rolldeck-app` (porta `3000`)
+- `rolldeck-postgres` (porta `5432` isolada na rede interna)
+
+### 3. Parar a Aplicação
 ```bash
 docker compose down
-```
-
-### 3. Executar via Docker CLI tradicional
-```bash
-# Construir a imagem
-docker build -t rolldeck:latest .
-
-# Rodar o container
-docker run -d -p 3000:3000 --name rolldeck-app rolldeck:latest
-```
-
----
-
-## 💻 Executando Localmente (Sem Docker)
-
-### Pré-requisitos
-- [Node.js](https://nodejs.org/) versão 20 ou superior.
-- [npm](https://www.npmjs.com/) ou [bun](https://bun.sh/).
-
-### Instalação e Execução
-```bash
-# 1. Instalar dependências
-npm install
-
-# 2. Iniciar servidor de desenvolvimento
-npm run dev
-
-# 3. Compilar versão de produção
-npm run build
-
-# 4. Iniciar servidor de produção
-npm start
-```
-O servidor estará ativo em: **`http://localhost:3000`**
-
----
-
-## 🧪 Testes Automatizados
-
-Para rodar a suíte completa de testes unitários com Vitest:
-```bash
-npm test
-```
-Ou em modo watch contínuo:
-```bash
-npx vitest
 ```
 
 ---
 
 ## ⚙️ Variáveis de Ambiente (`.env`)
 
-Crie um arquivo `.env` na raiz do projeto (baseado em `.env.example`):
+Configure o arquivo `.env` para adequar o ambiente da sua VPS:
 
 ```ini
-# Porta do servidor (padrão: 3000)
+# Porta HTTP exposta
 PORT=3000
 
-# Opcional: Chave da API do Google Gemini para geração de loot com IA.
-# Caso não informada, o RollDeck utiliza automaticamente o motor procedural sem IA.
-GEMINI_API_KEY="sua_chave_aqui"
+# Chave secreta forte para assinatura dos tokens JWT
+JWT_SECRET=sua_chave_secreta_jwt_de_producao
+
+# Senha inicial do usuário 'admin' no primeiro boot do banco
+ADMIN_INIT_PASSWORD=admin123
+
+# Configurações do PostgreSQL
+DB_USER=rolldeck
+DB_PASSWORD=rolldeck_secure_pass_2026
+DB_NAME=rolldeck_db
+
+# (Opcional) Chave da API do Google Gemini para geração de loot com IA
+GEMINI_API_KEY=
 ```
 
 ---
 
-## 📁 Estrutura do Projeto
+## 🧪 Testes e Qualidade de Código
 
+A aplicação conta com suíte automatizada de testes cobrindo rolagens, stores de autenticação, motores de loot procedural e conexões de wiki links:
+
+```bash
+# Executar todos os testes com Vitest
+docker compose run --rm rolldeck npx vitest run
 ```
-├── Dockerfile                  # Multi-stage Docker build para produção
-├── docker-compose.yml          # Orquestração do container Docker
-├── .dockerignore               # Arquivos ignorados no build Docker
-├── server.ts                   # Servidor Express com API e proxies
-├── index.html                  # Ponto de entrada HTML e tags PWA
-├── package.json                # Dependências e scripts
-├── src/
-│   ├── App.tsx                 # Componente raiz com guard de autenticação
-│   ├── main.tsx                # Bootstrap do React
-│   ├── index.css               # Estilos globais e Tailwind v4
-│   ├── types/                  # Tipagens TypeScript completas
-│   ├── db/
-│   │   └── indexedDB.ts        # Armazenamento persistente local (idb)
-│   ├── store/
-│   │   ├── useAppStore.ts      # Estado global da mesa e configurações
-│   │   ├── useAuthStore.ts     # Autenticação (admin / admin) e sessão
-│   │   ├── useLootStore.ts     # Estado dos geradores de loot
-│   │   └── useMapStore.ts      # Estado do mapa tático e nós
-│   ├── screens/
-│   │   ├── LoginScreen.tsx     # Tela de login principal do app
-│   │   ├── RollScreen.tsx      # Mesa principal de rolagem de dados
-│   │   ├── PackagesScreen.tsx  # Pacotes de sistemas de RPG
-│   │   ├── LootScreen.tsx      # Gerador de tesouros procedural e IA
-│   │   ├── MapScreen.tsx       # Mapa mental/tático relacional
-│   │   ├── HistoryScreen.tsx   # Logs de rolagens anteriores
-│   │   └── SettingsScreen.tsx  # Temas, dados 3D, backup e segurança
-│   ├── components/
-│   │   ├── dice/               # Animações 3D de dados, bandeja, modais
-│   │   ├── loot/               # Cartões e tabela de loot gerado
-│   │   ├── map/                # Canvas do mapa, minimapa, radial menu
-│   │   └── navigation/         # TopBar, BottomNav e DesktopSidebar
-│   └── lib/
-│       ├── ai/                 # Motores de geração (Procedural + Gemini)
-│       ├── audio.ts            # Sintetizador de áudio Web Audio API
-│       ├── haptics.ts          # Feedback tátil com vibração
-│       ├── roll.ts             # Motor de cálculo e fórmulas de dados
-│       └── theme.ts            # Gerenciador de paletas neon
-```
-
----
-
-## 🛡️ Licença
-Distribuído sob licença MIT. Criado para mesas de RPG de todo o mundo!
+Todos os **27 testes unitários** estão validados e verdes.

@@ -1,21 +1,61 @@
+# ==============================================================================
+# RollDeck V3 - Production Docker Stack (App + Postgres SQL Database)
+# ==============================================================================
+
 services:
+  # Database Service: Isolated PostgreSQL instance with persistent volume
+  rolldeck-db:
+    image: postgres:16-alpine
+    container_name: rolldeck-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-rolldeck}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-rolldeck_secure_pass_2026}
+      POSTGRES_DB: ${DB_NAME:-rolldeck_db}
+    volumes:
+      - pgdata_vol:/var/lib/postgresql/data
+    networks:
+      - rolldeck-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-rolldeck} -d ${DB_NAME:-rolldeck_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Application Service: Web UI, REST API, RBAC & AI Agent Gateway
   rolldeck:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: rolldeck-app
     restart: unless-stopped
+    depends_on:
+      rolldeck-db:
+        condition: service_healthy
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:3000"
     environment:
       - PORT=3000
       - NODE_ENV=production
-      # Opcional: Chave de API para geração de loot com IA Gemini.
-      # Se não fornecida, o RollDeck utiliza automaticamente o motor procedural 100% offline.
+      - DATABASE_URL=postgres://${DB_USER:-rolldeck}:${DB_PASSWORD:-rolldeck_secure_pass_2026}@rolldeck-db:5432/${DB_NAME:-rolldeck_db}
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_roll_deck_v3_production}
+      - ADMIN_INIT_PASSWORD=${ADMIN_INIT_PASSWORD:-admin123}
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    networks:
+      - rolldeck-internal
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
+
+volumes:
+  pgdata_vol:
+    name: rolldeck_pgdata
+
+networks:
+  rolldeck-internal:
+    name: rolldeck_internal_net
+    driver: bridge

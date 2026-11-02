@@ -10,7 +10,7 @@ WORKDIR /app
 
 # Install dependencies (including devDependencies required for vite build)
 COPY package.json package-lock.json* bun.lock* ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy source code and build client bundle
 COPY . .
@@ -29,10 +29,11 @@ ENV PORT=3000
 
 # Install production dependencies and tsx for execution
 COPY package.json package-lock.json* bun.lock* ./
-RUN npm install --omit=dev && npm install -g tsx
+RUN npm install --omit=dev --legacy-peer-deps && npm install -g tsx
 
-# Copy built frontend assets from builder stage
+# Copy built frontend assets and server files from builder stage
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/server ./server
 COPY --from=builder /app/server.ts ./server.ts
 
 # Healthcheck endpoint

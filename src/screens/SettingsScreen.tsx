@@ -40,6 +40,7 @@ import { playDiceRollSound } from '../lib/audio';
 import { triggerHaptic } from '../lib/haptics';
 import { applyTheme, getThemePreset, THEME_PRESETS, type ThemePreset } from '../lib/theme';
 import { useAppStore } from '../store/useAppStore';
+import { AdminManagementPanel } from '../components/admin/AdminManagementPanel';
 import { useAuthStore } from '../store/useAuthStore';
 import type { DieDefinition } from '../types';
 
@@ -58,7 +59,7 @@ export const SettingsScreen: React.FC = () => {
     rollTray,
   } = useAppStore();
 
-  const { logout, currentUser } = useAuthStore();
+  const { logout, currentUser, userProfile } = useAuthStore();
   const currentPreset = getThemePreset(settings.themeId);
   const [persisted, setPersisted] = useState(false);
   const [persistenceChecking, setPersistenceChecking] = useState(false);
@@ -316,6 +317,9 @@ export const SettingsScreen: React.FC = () => {
           <span>{statusMessage}</span>
         </div>
       )}
+
+      {/* Admin Panel */}
+      {userProfile?.role === 'admin' && <AdminManagementPanel />}
 
       {/* Subtabs navigation */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 rounded-xl glass-panel p-1 border border-white/10">
