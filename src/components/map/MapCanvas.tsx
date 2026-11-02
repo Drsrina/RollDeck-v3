@@ -1,5 +1,7 @@
+import { forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY } from 'd3-force';
 import {
   Compass,
+  Orbit,
   Layers,
   List,
   Maximize2,
@@ -39,6 +41,7 @@ export const MapCanvas: React.FC = () => {
     setLayersPanelOpen,
     setListPanelOpen,
     runForceLayout,
+    toggleGravityOrbit,
     addLink,
     undo,
     redo,
@@ -111,6 +114,98 @@ export const MapCanvas: React.FC = () => {
     }
     return focusSet;
   }, [viewState.focusNodeId, viewState.focusHops, visibleLinks]);
+
+  // ------------------- Continuous Gravity & Orbital Physics Engine -------------------
+  useEffect(() => {
+    if (!viewState.gravityOrbit || notes.length < 2) return;
+
+    // Simulation nodes setup
+    const simNodes = notes.map((n) => ({
+      id: n.id,
+      x: n.x,
+      y: n.y,
+      vx: 0,
+      vy: 0,
+      pinned: Boolean(n.pinned),
+      fx: n.pinned ? n.x : undefined,
+      fy: n.pinned ? n.y : undefined,
+    }));
+
+    const simLinks = links
+      .filter((l) => visibleNoteIds.has(l.fromId) && visibleNoteIds.has(l.toId))
+      .map((l) => ({ source: l.fromId, target: l.toId }));
+
+    // Find pinned anchor notes
+    const pinnedNodes = simNodes.filter((n) => n.pinned);
+
+    // Orbit force: applies tangential velocity to create rotational momentum around pinned anchors or center
+    const orbitForce = (alpha: number) => {
+      const speed = 0.85 * alpha;
+      const center = { x: 0, y: 0 };
+
+      for (const node of simNodes) {
+        if (node.pinned) continue;
+
+        // Choose anchor: nearest pinned note, or center of mass (0,0)
+        let anchor = center;
+        if (pinnedNodes.length > 0) {
+          let minDist = Infinity;
+          for (const pn of pinnedNodes) {
+            const d = Math.hypot(node.x - pn.x, node.y - pn.y);
+            if (d < minDist) {
+              minDist = d;
+              anchor = pn;
+            }
+          }
+        }
+
+        const dx = node.x - anchor.x;
+        const dy = node.y - anchor.y;
+        const dist = Math.hypot(dx, dy) || 1;
+
+        // Tangential vector (-dy, dx) imparts orbital angular velocity
+        const tangentX = -dy / dist;
+        const tangentY = dx / dist;
+
+        node.vx = (node.vx || 0) + tangentX * speed;
+        node.vy = (node.vy || 0) + tangentY * speed;
+
+        // Gentle central gravity pull (F = G/r)
+        const pull = 0.45 * alpha;
+        node.vx -= (dx / dist) * pull;
+        node.vy -= (dy / dist) * pull;
+      }
+    };
+
+    const sim = forceSimulation(simNodes as any)
+      .alphaDecay(0.005)
+      .alphaTarget(0.3)
+      .velocityDecay(0.4)
+      .force(
+        'link',
+        forceLink(simLinks as any)
+          .id((d: any) => d.id)
+          .distance(150)
+          .strength(0.3)
+      )
+      .force('charge', forceManyBody().strength(-120))
+      .force('collide', forceCollide().radius(65).strength(0.8))
+      .force('orbit', orbitForce)
+      .on('tick', () => {
+        // Apply smoothly to note DOM positions while not dragging
+        if (draggingNodeIdRef.current) return;
+        simNodes.forEach((sn) => {
+          if (!sn.pinned && sn.x !== undefined && sn.y !== undefined) {
+            updateNotePosition(sn.id, Math.round(sn.x), Math.round(sn.y));
+          }
+        });
+      });
+
+    return () => {
+      sim.stop();
+      commitNotePositions().catch(() => {});
+    };
+  }, [viewState.gravityOrbit, notes.length, links.length, visibleNoteIds, updateNotePosition, commitNotePositions]);
 
   // Update transform on transform layer
   useEffect(() => {
@@ -585,6 +680,20 @@ export const MapCanvas: React.FC = () => {
             title="Reorganizar Grafo com Força"
           >
             <Network className="w-4 h-4" />
+          </button>
+
+          {/* Orbit Gravity Mode Button */}
+          <button
+            onClick={toggleGravityOrbit}
+            aria-label="Gravidade e Orbita de Notas"
+            className={`w-9 h-9 flex items-center justify-center rounded-xl transition ${
+              viewState.gravityOrbit
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.4)] animate-pulse'
+                : 'text-slate-400 hover:text-white hover:bg-white/10'
+            }`}
+            title={viewState.gravityOrbit ? 'Desativar Gravidade e Orbita' : 'Ativar Gravidade e Orbita Continua'}
+          >
+            <Orbit className="w-4 h-4" />
           </button>
 
           {/* Undo / Redo */}

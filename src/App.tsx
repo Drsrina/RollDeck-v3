@@ -9,6 +9,7 @@ import { HistoryScreen } from './screens/HistoryScreen';
 import { LoginScreen } from './screens/LoginScreen';
 import { LootScreen } from './screens/LootScreen';
 import { MapScreen } from './screens/MapScreen';
+import { BattlemapScreen } from './screens/BattlemapScreen';
 import { PackagesScreen } from './screens/PackagesScreen';
 import { RollScreen } from './screens/RollScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
@@ -21,7 +22,8 @@ const TAB_SHORTCUT_MAP: Record<string, ActiveTab> = {
   '3': 'map',
   '4': 'loot',
   '5': 'history',
-  '6': 'settings',
+  '6': 'battlemap',
+  '7': 'settings',
 };
 
 export default function App() {
@@ -147,6 +149,10 @@ export default function App() {
         <main className="flex-1 w-full flex flex-col overflow-hidden">
           {activeTab === 'map' ? (
             <MapScreen />
+          ) : activeTab === 'battlemap' ? (
+            <div className="flex-1 w-full h-full p-1 md:p-3 overflow-hidden">
+              <BattlemapScreen />
+            </div>
           ) : (
             <div className="flex-1 w-full overflow-y-auto">
               <div className="w-full max-w-lg md:max-w-6xl xl:max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-2 md:py-6">

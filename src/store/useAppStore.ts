@@ -32,7 +32,7 @@ import type {
   SelectedDieGroup,
 } from '../types';
 
-export type ActiveTab = 'roll' | 'packages' | 'map' | 'loot' | 'history' | 'settings';
+export type ActiveTab = 'roll' | 'packages' | 'map' | 'battlemap' | 'loot' | 'history' | 'settings';
 
 interface AppState {
   isInitialized: boolean;

@@ -1,4 +1,5 @@
 import {
+  Compass,
   Dices,
   History,
   Keyboard,
@@ -67,9 +68,10 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ className = '' }
     },
     { id: 'packages', label: 'Pacotes Pré-config', shortcut: '2', icon: PackageCheck },
     { id: 'map', label: 'Mapa de Notas', shortcut: '3', icon: MapIcon },
-    { id: 'loot', label: 'Geradores de Loot', shortcut: '4', icon: Sparkles },
-    { id: 'history', label: 'Histórico & Logs', shortcut: '5', icon: History },
-    { id: 'settings', label: 'Ajustes & Dados', shortcut: '6', icon: Settings },
+    { id: 'battlemap', label: 'Forja de Mapas', shortcut: '4', icon: Compass },
+    { id: 'loot', label: 'Geradores de Loot', shortcut: '5', icon: Sparkles },
+    { id: 'history', label: 'Histórico & Logs', shortcut: '6', icon: History },
+    { id: 'settings', label: 'Ajustes & Dados', shortcut: '7', icon: Settings },
   ];
 
   const handleSelectTab = (tab: ActiveTab) => {

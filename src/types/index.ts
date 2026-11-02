@@ -167,6 +167,7 @@ export interface MapViewState {
   showMinimap: boolean;
   focusNodeId?: string | null;
   focusHops: number; // 1, 2, 3
+  gravityOrbit?: boolean;
 }
 
 // ----------------- LOOT GENERATION & COLUMNS TYPES -----------------

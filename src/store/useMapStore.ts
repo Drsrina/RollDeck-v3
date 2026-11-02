@@ -71,6 +71,7 @@ interface MapStoreState {
   commitNotePositions: () => Promise<void>;
   deleteNoteData: (id: string, removeLinks?: boolean) => Promise<void>;
   togglePinNode: (id: string) => Promise<void>;
+  toggleGravityOrbit: () => void;
 
   // Links
   addLink: (fromId: string, toId: string, label?: string, type?: NoteLink['type']) => Promise<void>;
@@ -348,6 +349,11 @@ export const useMapStore = create<MapStoreState>((set, get) => ({
     set((state) => ({
       notes: state.notes.map((n) => (n.id === id ? updated : n)),
     }));
+  },
+
+  toggleGravityOrbit: () => {
+    const current = get().viewState.gravityOrbit ?? false;
+    get().setViewState({ gravityOrbit: !current });
   },
 
   addLink: async (fromId, toId, label, type = 'link') => {

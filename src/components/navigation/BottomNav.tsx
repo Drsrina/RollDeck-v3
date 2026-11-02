@@ -1,4 +1,4 @@
-import { Dices, History, Map as MapIcon, PackageCheck, Settings, Sparkles } from 'lucide-react';
+import { Compass, Dices, History, Map as MapIcon, PackageCheck, Settings, Sparkles } from 'lucide-react';
 import React from 'react';
 import { triggerHaptic } from '../../lib/haptics';
 import { getThemePreset } from '../../lib/theme';
@@ -13,7 +13,8 @@ export const BottomNav: React.FC = () => {
   const tabs: { id: ActiveTab; label: string; icon: React.FC<{ className?: string; style?: React.CSSProperties }>; badge?: number }[] = [
     { id: 'roll', label: 'Rolar', icon: Dices, badge: totalDiceInTray > 0 ? totalDiceInTray : undefined },
     { id: 'packages', label: 'Pacotes', icon: PackageCheck },
-    { id: 'map', label: 'Mapa', icon: MapIcon },
+    { id: 'map', label: 'Notas', icon: MapIcon },
+    { id: 'battlemap', label: 'Forja', icon: Compass },
     { id: 'loot', label: 'Loot', icon: Sparkles },
     { id: 'history', label: 'Histórico', icon: History },
     { id: 'settings', label: 'Ajustes', icon: Settings },
