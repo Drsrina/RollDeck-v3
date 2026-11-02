@@ -7,6 +7,8 @@ import React from 'react';
 import { useMapStore } from '../store/mapStore';
 import { VisualStyleId, MapMode } from '../types/map';
 import {
+  Maximize2,
+  Minimize2,
   Undo2,
   Redo2,
   Grid,
@@ -28,9 +30,11 @@ interface TopBarProps {
   onOpenExport: () => void;
   onOpenAssets: () => void;
   onOpenAi: () => void;
+  isZenMode?: boolean;
+  onToggleZenMode?: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onOpenGenerator, onOpenExport, onOpenAssets, onOpenAi }) => {
+export const TopBar: React.FC<TopBarProps> = ({ onOpenGenerator, onOpenExport, onOpenAssets, onOpenAi, isZenMode, onToggleZenMode }) => {
   const {
     doc,
     setStyle,
@@ -147,6 +151,22 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenGenerator, onOpenExport, o
           {isPlayerMode ? <EyeOff className="w-3.5 h-3.5 text-emerald-400" /> : <Eye className="w-3.5 h-3.5 text-purple-400" />}
           <span>{isPlayerMode ? 'Modo Jogadores' : 'Modo Mestre'}</span>
         </button>
+
+        {/* Zen Mode Fullscreen Toggle */}
+        {onToggleZenMode && (
+          <button
+            onClick={onToggleZenMode}
+            title={isZenMode ? "Sair do Modo Zen (Restaurar Sidebar)" : "Modo Zen / Tela Cheia (Foco Total no Mapa)"}
+            className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-xs font-medium transition-colors shadow-sm ${
+              isZenMode
+                ? 'bg-amber-500/20 border-amber-400 text-amber-300'
+                : 'bg-[#181c26] hover:bg-[#202738] border-[#2c3342] text-neutral-300'
+            }`}
+          >
+            {isZenMode ? <Minimize2 className="w-3.5 h-3.5 text-amber-400" /> : <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />}
+            <span>{isZenMode ? "Restaurar" : "Modo Zen"}</span>
+          </button>
+        )}
 
         {/* Asset Library Trigger */}
         <button

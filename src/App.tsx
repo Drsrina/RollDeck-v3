@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { DiceRollAnimation } from './components/dice/DiceRollAnimation';
 import { RollResultsModal } from './components/dice/RollResultsModal';
+import { CommandPalette } from './components/navigation/CommandPalette';
 import { BottomNav } from './components/navigation/BottomNav';
 import { DesktopSidebar } from './components/navigation/DesktopSidebar';
 import { TopBar } from './components/navigation/TopBar';
@@ -27,6 +28,8 @@ const TAB_SHORTCUT_MAP: Record<string, ActiveTab> = {
 };
 
 export default function App() {
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = React.useState<boolean>(false);
+  const [isZenMode, setIsZenMode] = React.useState<boolean>(false);
   const {
     isInitialized,
     refreshFromDB,
@@ -64,7 +67,14 @@ export default function App() {
         return;
       }
 
-      // Tab shortcuts 1-6
+      // Command Palette (Ctrl+K or Cmd+K)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+        return;
+      }
+
+      // Tab shortcuts 1-7
       if (TAB_SHORTCUT_MAP[e.key]) {
         e.preventDefault();
         setActiveTab(TAB_SHORTCUT_MAP[e.key]);
@@ -138,7 +148,7 @@ export default function App() {
       />
 
       {/* Desktop Sidebar (visible on md+) */}
-      <DesktopSidebar className="hidden md:flex" />
+      {!isZenMode && <DesktopSidebar className="hidden md:flex" />}
 
       {/* Content Column (Mobile TopBar + Screen views) */}
       <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden relative">
@@ -151,7 +161,7 @@ export default function App() {
             <MapScreen />
           ) : activeTab === 'battlemap' ? (
             <div className="flex-1 w-full h-full p-1 md:p-3 overflow-hidden">
-              <BattlemapScreen />
+              <BattlemapScreen isZenMode={isZenMode} onToggleZenMode={() => setIsZenMode((prev) => !prev)} />
             </div>
           ) : (
             <div className="flex-1 w-full overflow-y-auto">
@@ -174,6 +184,11 @@ export default function App() {
       <DiceRollAnimation />
 
       {/* Full Roll Result Modal */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+      />
+
       <RollResultsModal
         result={currentResult}
         isOpen={showResultModal}

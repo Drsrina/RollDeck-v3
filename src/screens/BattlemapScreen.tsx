@@ -8,7 +8,12 @@ import { ExportModal } from '../modules/cartography/ui/ExportModal';
 import { AssetLibraryModal } from '../modules/cartography/ui/AssetLibraryModal';
 import { AiChatDrawer } from '../modules/cartography/ui/AiChatDrawer';
 
-export const BattlemapScreen: React.FC = () => {
+interface BattlemapScreenProps {
+  isZenMode?: boolean;
+  onToggleZenMode?: () => void;
+}
+
+export const BattlemapScreen: React.FC<BattlemapScreenProps> = ({ isZenMode = false, onToggleZenMode }) => {
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isAssetLibraryOpen, setIsAssetLibraryOpen] = useState(false);
@@ -22,6 +27,8 @@ export const BattlemapScreen: React.FC = () => {
         onOpenExport={() => setIsExportOpen(true)}
         onOpenAssets={() => setIsAssetLibraryOpen(true)}
         onOpenAi={() => setIsAiChatOpen(true)}
+        isZenMode={isZenMode}
+        onToggleZenMode={onToggleZenMode}
       />
 
       {/* Main Workspace: Left Toolbox, Center Canvas, Right Inspector */}
